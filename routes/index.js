@@ -11,10 +11,10 @@ router.get('/projects/:id', projectController.show);
 router.put('/projects/:id', projectController._update);
 router.delete('/projects/:id', projectController.del);
 // actions endpoints
-router.get('/actions', actionController.index);
-router.post('/actions', actionController.create);
-router.get('/actions/:id', actionController.show);
-router.put('/actions/:id', actionController._update);
-router.delete('/actions/:id', actionController.del);
+router.get('/projects/:id/actions', actionController.index);
+router.post('/projects/:id/actions', actionController.create);
+router.get('/projects/:id/actions/:actionId', actionController.show);
+router.put('/projects/:id/actions/:actionId', actionController._update);
+router.delete('/projects/:id/actions/:actionId', actionController.del);
 
 module.exports = router;
