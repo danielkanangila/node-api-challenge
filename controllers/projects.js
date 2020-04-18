@@ -1,4 +1,4 @@
-const { get, insert, update, remove, validate } = require("../data/helpers/projectModel");
+const { get, insert, update, remove } = require("../data/helpers/projectModel");
 
 async function index(req, res) {
     try {
@@ -11,45 +11,21 @@ async function index(req, res) {
 }
 
 function show(req, res) {
-    if (req.params.id) {
-        get(req.params.id)
-        .then(result => {
-            res.status(200).json(result)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({message: "An error occurred while trying to retrieve project with the specified ID"})
-        })
-    } else {
-        res.status(400).json({message: "Can't retrieve project with the specified ID"});
-    }
+   res.status(200).json(req.project);
 }
 
 function create(req, res) {
-    const data = req.body;
-    if (validate(req.body)) {
-        insert(data)
-        .then(lastInsertProject => {
-            res.status(201).json(lastInsertProject);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({message: "An error occurred while trying to store project."})
-        })
-    } else {
-        res.status(400).json({message: "\"name\" and \"description\" are required in request body."});
-    }
+    insert(req.body)
+    .then(lastInsertProject => {
+        res.status(201).json(lastInsertProject);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({message: "An error occurred while trying to store project."})
+    })
 }
 
 function _update(req, res) {
-    if (!req.params.id) {
-        res.status(400).json({message: "Can't retrieve project with the specified ID"});
-        return false;
-    }
-    if (!validate(req.body)) {
-        res.status(400).json({message: "\"name\" and \"description\" are required in request body."});
-        return false;
-    }
     update(req.params.id, req.body)
     .then(result => {
         res.status(200).json(result)
@@ -61,10 +37,6 @@ function _update(req, res) {
 }
 
 function del(req, res) {
-    if (!req.params.id) {
-        res.status(400).json({message: "Can't retrieve project with the specified ID"});
-        return false;
-    }
     remove(req.params.id)
     .then(result => {
         res.status(200).json({

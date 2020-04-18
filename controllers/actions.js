@@ -1,12 +1,8 @@
-const { get, insert, update, remove, validate } = require("./../data/helpers/actionModel");
-const project = require("./../data/helpers/projectModel");
+const Action = require("./../data/helpers/actionModel");
+const Project = require("./../data/helpers/projectModel");
 
 function index(req, res) {
-    if (!req.params.id) {
-        res.status(400).json({message: "Can't retrieve project with the specified ID"});
-        return false;
-    }
-    project.getProjectActions(req.params.id)
+    Project.getProjectActions(req.params.id)
     .then(result => {
         res.status(200).json(result);
     })
@@ -17,68 +13,36 @@ function index(req, res) {
 }
 
 function show(req, res) {
-
+    res.status(200).json(req.action);
 }
 
-function create(req, res) {
-    return save(req, res, insert, "create");    
-    // try {
-    //     if (!req.params.id) {
-    //         res.status(400).json({message: "Can't retrieve project with the specified ID"});
-    //         return false;
-    //     }
-    //     if (!validate(req.body)) {
-    //         res.status(400).json({message: '"description" and "notes" are required.'});
-    //         return false;
-    //     }
-    //     const project = await project.get(req.params.id)
-    //     if (!project) {
-    //         res.status(400).json({message: "Can't retrieve project with the specified ID"});
-    //         return false;
-    //     }
-    //     const data = {...req.body, project_id: project.id}
-    //     const result = await insert(data);
-
-    //     res.status(200).json(result);
-    // } catch(err) {
-    //     console.log(err);
-    //     res.status(500).json({message: "An occurred while trying to save action."})
-    // }
+async function create(req, res) {   
+    const data = {
+        ...req.body,
+        project_id: req.project.id
+    }
+    try {
+        const action = await Action.insert(data);
+        res.status(201).json(action);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({message: "An error occurred while trying to save project information."})
+    }
 }
 
 async function _update(req, res) {
-    return save(req, res, update, "update");
-    // try {
-    //     if (!req.params.id) {
-    //         res.status(400).json({message: "Can't retrieve project with the specified ID"});
-    //         return false;
-    //     }
-    //     if (!validate(req.body)) {
-    //         res.status(400).json({message: '"description" and "notes" are required.'});
-    //         return false;
-    //     }
-    //     const project = await project.get(req.params.id)
-    //     if (!project) {
-    //         res.status(400).json({message: "Can't retrieve project with the specified ID"});
-    //         return false;
-    //     }
-    //     const data = {...req.body, project_id: project.id}
-    //     const result = await update(data);
-
-    //     res.status(200).json(result);
-    // } catch(err) {
-    //     console.log(err);
-    //     res.status(500).json({message: "An occurred while trying to save action."})
-    // }
+    try {
+        const action = await Action.update(req.params.id, req.body);
+        res.status(200).json(action);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({message: "An error occurred while trying to update project information."})
+    }
 }
 
 async function del(req, res) {
     try {
-        if (!req.params.actionId) {
-            res.status(400).json({message: "Can't retrieve action with the specified ID"});
-            return false;
-        }
-       const deleted = await remove(req.params.actionId);
+       const deleted = await Action.remove(req.params.actionId);
        if (!deleted) {
             res.status(400).json({message: "Can't delete action with the specified ID"});
             return false;
@@ -87,37 +51,6 @@ async function del(req, res) {
     } catch(err) {
         console.log(err);
         res.status(500).json({message: "An error occurred while trying to delete action with the specified ID"});
-    }
-}
-
-async function save(req, res, cb, action) {
-   
-    try {
-        if (!parseInt(req.params.id)) {
-            res.status(400).json({message: "Can't retrieve project with the specified ID"});
-            return false;
-        }
-        if (!validate(req.body)) {
-            res.status(400).json({message: '"description" and "notes" are required in request body.'});
-            return false;
-        }
-        if (action === 'update' && !parseInt(req.params.actionId)) {
-            res.status(400).json({message: "Can't retrieve action with the specified ID"});
-            return false;
-        }
-        const p = await project.get(req.params.id)
-        if (!p) {
-            res.status(400).json({message: "Can't retrieve project with the specified ID"});
-            return false;
-        }
-        const data = action === 'create' ? {...req.body, project_id: p.id} : req.body;
-
-        const result = action === 'create' ? await cb(data) : await cb(req.params.actionId, data)
-
-        res.status(200).json(result)
-    } catch(err) {
-        console.log(err);
-        res.status(500).json({message: "An occurred while trying to save action."})
     }
 }
 

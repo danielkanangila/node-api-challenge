@@ -6,7 +6,6 @@ module.exports = {
   insert,
   update,
   remove,
-  validate,
 };
 
 function get(id) {
@@ -45,15 +44,4 @@ function update(id, changes) {
 
 function remove(id) {
   return db('actions').where('id', id).del();
-}
-
-function validate(body) {
-  if (!body.description || (body.description && !body.description.trim())) {
-    console.log(body)
-    return false;
-  }
-  if (!body.notes || (body.notes && !body.notes.trim())) {
-    return false;
-  }
-  return true
 }

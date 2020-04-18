@@ -7,7 +7,6 @@ module.exports = {
   update,
   remove,
   getProjectActions,
-  validate
 };
 
 function get(id) {
@@ -59,14 +58,4 @@ function getProjectActions(projectId) {
   return db("actions")
     .where("project_id", projectId)
     .then(actions => actions.map(action => mappers.actionToBody(action)));
- }
-
- function validate(data) {
-   if (!data.name || (data.name && !data.name.trim())) {
-     return false;
-   }
-   if (!data.description || (data.description && !data.description.trim())) {
-     return false;
-   }
-   return true;
  }
