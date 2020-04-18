@@ -40,13 +40,43 @@ Demonstrate your understanding of this Sprint's concepts by answering the follow
 
 - [ ] Mention two parts of Express that you learned about this week.
 
+Express routing and express middleware.
+
 - [ ] Describe Middleware?
+
+In express, middleware is an array of functions executed on each request sent to the server in the order they are introduced into the express application.
 
 - [ ] Describe a Resource?
 
+In REST architecture resources are contents managed by the API, It can be a text file, data from the database, JSON, HTML,... 
+
 - [ ] What can the API return to help clients know if a request was successful?
 
+To help clients to know if a request was successful executed the API return the HTTP status code 200 on the response header and the response body with the requested data.
+
 - [ ] How can we partition our application into sub-applications?
+
+We can partition our application into sub-application by creating a different express router or application for each group of resources and bind the sub-applications to the main application like this:
+```javascript
+    const express = require("express");
+
+    // User resources sub-app (1)
+    userRouter = express.Router();
+    userRouter.get("/", (req, res) => {
+        // send user list here
+    });
+
+    // Post resources sub-app (2)
+    postRouter = express.Router();
+    postRouter.get("/", (req, res) => {
+        //send post list here
+    });
+
+    // Binding sub-apps to main app
+    const mainApp = express();
+    mainApp.use("/users", userRouter);
+    mainApp.use("/post", postRouter);
+```
 
 ## Minimum Viable Product
 
